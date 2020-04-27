@@ -1,0 +1,19 @@
+[
+  {
+    "modid": "fira_client",
+    "name": "Fira Client",
+    "description": "Fira Client, provides several utilities and hacks, intended for 2B2T (and only 2B2T as the only server that allows hacks)",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["cout970"],
+    "credits": "All your base are belong to us",
+    "logoFile": "assets/fira_client/logo.png",
+    "screenshots": [],
+    "requiredMods": [],
+    "dependencies": []
+  }
+]
+
+

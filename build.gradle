@@ -1,0 +1,117 @@
+import java.util.regex.Pattern
+
+buildscript {
+    ext.project_kotlin_version = '1.3.50'
+
+    repositories {
+        jcenter()
+        maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url = 'http://repo.spongepowered.org/maven' }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$project_kotlin_version"
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'kotlin'
+apply plugin: 'java'
+
+// Version from Hacks.kt
+def version_text = new File(projectDir, "src/main/kotlin/com/cout970/fira/FiraClient.kt").text
+version_text = version_text.find(Pattern.compile("const val MOD_VERSION = \"\\d.\\d.\\d\""))
+version_text = version_text.substring(25, version_text.length() - 1)
+
+(new File("version.txt")).write(version_text)
+
+version = version_text
+group = "com.cout970.fira"
+archivesBaseName = "fira"
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "1.12.2-14.23.5.2847"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+    makeObfSourceJar = false
+    coreMod = "com.cout970.fira.coremod.FiraClientCoremod"
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += '-Xno-param-assertions'
+        freeCompilerArgs += '-Xno-call-assertions'
+        freeCompilerArgs += '-Xno-receiver-assertions'
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        name = 'spongepowered-repo'
+        url = 'http://repo.spongepowered.org/maven/'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    //mixin needs to be distributed with the mod, very important
+    compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+    compile group: 'org.javassist', name: 'javassist', version: '3.27.0-GA'
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$project_kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$project_kotlin_version"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+
+    // move _at.cfg into META-INF
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+mixin {
+    defaultObfuscationEnv searge
+    add sourceSets.main, 'mixins.fira_client.refmap.json'
+}
+
+jar {
+    manifest {
+        attributes(
+                "FMLCorePluginContainsFMLMod": "true",
+                "FMLCorePlugin": "com.cout970.fira.coremod.FiraClientCoremod",
+                'MixinConfigs': 'mixins.fira_client.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'ForceLoadAsMod': 'true',
+        )
+    }
+}
+
+compileKotlin.dependsOn clean

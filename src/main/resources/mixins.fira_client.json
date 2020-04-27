@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.6",
+  "package": "com.cout970.fira.coremod.mixin",
+  "refmap": "mixins.fira_client.refmap.json",
+  "client": [
+    "MixinGuiDisconnected",
+    "MixinEntityLivingBase",
+    "MixinEntityPlayerSP",
+    "MixinRenderEnderCrystal",
+    "MixinExplosion",
+    "MixinNetHandlerPlayClient",
+    "MixinTileEntityRendererDispatcher",
+    "MixinEntity"
+  ]
+}
