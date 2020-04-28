@@ -22,6 +22,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'kotlin'
 apply plugin: 'java'
 
+// Version from Hacks.kt
 def version_text = new File(projectDir, "src/main/kotlin/com/cout970/fira/FiraClient.kt").text
 version_text = version_text.find(Pattern.compile("const val MOD_VERSION = \"\\d.\\d.\\d\""))
 version_text = version_text.substring(25, version_text.length() - 1)
@@ -64,7 +65,7 @@ repositories {
 
 dependencies {
     //mixin needs to be distributed with the mod, very important
-    compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {
+    compile("org.spongepowered:mixin:0.7.8-SNAPSHOT") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
